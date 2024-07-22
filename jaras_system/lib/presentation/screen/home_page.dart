@@ -601,7 +601,7 @@ class _MyHomePageState extends State<MyHomePage> {
       trailingWidget = _buildListTile(
         listTileText,
         const Color(0xFF92D400),
-        'assets/image/DD.png', // Replace with the path to your image
+        'assets/image/DD.png',
         request,
       );
     } else if (request.status == 'يذاع الأن') {
@@ -782,7 +782,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.notifications,
                     color: color,
                   )
-                : null,
+                : Icon(
+                    Icons.lock,
+                    color: color,
+                    size: 20,
+                  ),
           ),
         ),
       ),
@@ -880,7 +884,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     width: 24,
                     height: 20,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
                             'assets/image/Help.png'), // Replace with your image path
@@ -990,7 +994,7 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: _buildHeader(
                   leftText: 'إضافة مفوض جديد',
                   leftIcon: Icons.add_circle,
