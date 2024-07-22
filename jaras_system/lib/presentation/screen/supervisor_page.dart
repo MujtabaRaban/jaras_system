@@ -28,9 +28,9 @@ class SupervisorPage extends StatelessWidget {
           },
         ),
       ),
-      body: Center(
-        child: Container(
-          color: Colors.white,
+      body: Container(
+        color: Colors.white,
+        child: Center(
           child: Padding(
             padding: const EdgeInsets.all(25),
             child: Column(

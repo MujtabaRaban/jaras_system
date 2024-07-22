@@ -177,6 +177,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF92D204),
+        toolbarHeight: 0,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: OrientationBuilder(
         builder: (context, orientation) {
           return StreamBuilder<String>(
@@ -197,13 +203,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildBody(String currentStatus) {
     return Stack(
       children: [
-        Positioned.fill(
-          bottom: 400,
-          child: Image.asset(
-            currentStatus == 'حان موعد الخروج'
-                ? 'assets/image/alram.jpg'
-                : 'assets/image/alram0.jpg',
-            fit: BoxFit.cover,
+        Container(
+          color: const Color(0xFF92D204),
+          height: MediaQuery.of(context).size.height * 0.5,
+        ),
+        Positioned(
+          top: 85,
+          right: -80,
+          child: Container(
+            width: 304,
+            height: 304,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/image/bb.png'),
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
         ),
         SingleChildScrollView(
@@ -323,6 +338,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ? Icons.notifications_active
         : Icons.notifications;
 
+    // Determine the image based on the status
+    String imagePath = currentStatus == 'حان موعد الخروج'
+        ? 'assets/image/Echo.jpg' // Image for "حان موعد الخروج"
+        : 'assets/image/bell2.png'; // Image for other statuses
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Card(
@@ -353,11 +373,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              SizedBox(width: 10),
-              Icon(
-                leadingIcon,
-                color: color,
-                size: 30,
+              const SizedBox(width: 10),
+              Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(imagePath),
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
             ],
           ),
@@ -393,11 +418,11 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: _buildHeader(
                   leftText: 'حالة الطالب',
-                  leftIcon: Icons.help,
-                  leftIconColor: Color(0xFFA4AFC0),
+                  leftIcon: Icons.info,
+                  leftIconColor: const Color(0xFFA4AFC0),
                   onLeftIconPressed: () {
                     // Add your onPressed code here
                     showDialog(
@@ -414,7 +439,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.pop(context);
                                 },
                               ),
-                              Text('ما هي حالة الطالب؟'),
+                              const Text('ما هي حالة الطالب؟'),
                               IconButton(
                                 iconSize: 20,
                                 icon: const Icon(Icons.help),
@@ -423,7 +448,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   // onPressed code here
                                 },
                               ),
-                              SizedBox(width: 10)
+                              const SizedBox(width: 1)
                             ],
                           ),
                           content: StudentStatusList(),
@@ -432,8 +457,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                   rightText: 'طلب النداء',
-                  rightIcon: Icons.notifications,
-                  rightIconColor: Color(0xFF92D400),
+                  rightImagePath:
+                      'assets/image/greenbell.png', // Path to the right image
                 ),
               ),
               const SizedBox(height: 10),
@@ -461,14 +486,13 @@ class _MyHomePageState extends State<MyHomePage> {
     required Color leftIconColor,
     required VoidCallback onLeftIconPressed,
     required String rightText,
-    required IconData rightIcon,
-    required Color rightIconColor,
+    required String rightImagePath, // Path for the right image
   }) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFFA4AFC0).withOpacity(0.1), // Border color
+            color: const Color(0xFFA4AFC0).withOpacity(0.1), // Border color
             width: 1.0, // Border width
           ),
         ),
@@ -481,7 +505,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               children: [
                 IconButton(
-                  iconSize: 20,
+                  iconSize: 24,
                   icon: Icon(leftIcon),
                   color: leftIconColor,
                   onPressed: onLeftIconPressed,
@@ -505,10 +529,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 const SizedBox(width: 5),
-                Icon(
-                  rightIcon,
-                  color: rightIconColor,
-                  size: 24,
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(rightImagePath),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -519,8 +548,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRequestItem(PickUpRequest request) {
-    // Variables to hold the icon, color, and text based on the request status
-    IconData statusIcon;
+    // Variables to hold the image path, color, and text based on the request status
+    String statusImagePath;
     Color statusColor;
     String statusText;
     String listTileText;
@@ -530,7 +559,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 'حاضر':
       case 'يذاع الأن':
       case 'طلب النداء':
-        statusIcon = Icons.check_circle;
+        statusImagePath = 'assets/image/Checkmark.png';
         statusColor = const Color(0xFF92D400);
         statusText = 'حاضر';
         listTileText = (request.status == 'يذاع الأن')
@@ -538,25 +567,29 @@ class _MyHomePageState extends State<MyHomePage> {
             : 'اسحب لرن الجرس';
         break;
       case 'خرج':
-        statusIcon = Icons.logout;
+        statusImagePath =
+            'assets/image/Outside.png'; // Change this to appropriate image
         statusColor = const Color(0xff00D9F4);
         statusText = 'خرج';
         listTileText = 'غادر الطالب المدرسة';
         break;
       case 'غائب':
-        statusIcon = Icons.heart_broken_outlined;
+        statusImagePath =
+            'assets/image/Heartbreak.png'; // Change this to appropriate image
         statusColor = const Color(0xff9DA5B2);
         statusText = 'غائب';
         listTileText = 'الطالب غائب اليوم';
         break;
       case 'متأخر':
-        statusIcon = Icons.schedule;
+        statusImagePath =
+            'assets/image/ClockDelay.png'; // Change this to appropriate image
         statusColor = const Color(0xffFFA544);
         statusText = 'متأخر';
         listTileText = 'لم يخرج بعد 5 دقائق من ندائه';
         break;
       default:
-        statusIcon = Icons.help_outline;
+        statusImagePath =
+            'assets/image/D.png'; // Change this to appropriate image
         statusColor = Colors.grey;
         statusText = 'غير معروف';
         listTileText = 'الحالة غير معروفة';
@@ -587,8 +620,10 @@ class _MyHomePageState extends State<MyHomePage> {
             size: 35,
           ),
         ),
-        child: _buildListTile(listTileText, const Color(0xFF92D400),
-            Icons.keyboard_double_arrow_left_outlined),
+        child: _buildListTile(
+          listTileText, const Color(0xFF92D400),
+          'assets/image/DD.png', // Replace with the path to your image
+        ),
       );
     } else if (request.status == 'يذاع الأن') {
       trailingWidget = Container(
@@ -596,7 +631,7 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(14),
         ),
         child: _buildListTile(
-            listTileText, const Color(0xFF2BAFCC), Icons.volume_up_rounded),
+            listTileText, const Color(0xff00D9F4), 'assets/image/off.png'),
       );
     } else if (request.status == 'خرج') {
       trailingWidget = Container(
@@ -604,13 +639,13 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(14),
         ),
         child: _buildListTile(
-            listTileText, const Color(0xff00D9F4), Icons.time_to_leave_sharp),
+            listTileText, const Color(0xff00D9F4), 'assets/image/lol.png'),
       );
     } else {
       trailingWidget = Container(
         margin: const EdgeInsets.symmetric(vertical: 15),
-        child:
-            _buildListTile(listTileText, const Color(0xFF9DA5B2), Icons.lock),
+        child: _buildListTile(
+            listTileText, const Color(0xFF9DA5B2), 'assets/image/up.png'),
       );
     }
 
@@ -635,10 +670,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    Icon(
-                      statusIcon,
-                      color: statusColor,
-                      size: 24,
+                    Container(
+                      width: 20,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(statusImagePath),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -669,9 +709,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildListTile(String listTileText, Color color, IconData icon) {
+  Widget _buildListTile(String listTileText, Color color, String imagePath) {
     return SizedBox(
-      width: 380,
+      width: 382,
       child: ListTile(
         title: Card(
           color: Colors.white,
@@ -691,7 +731,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-                    const SizedBox(width: 8), // Space between text and icon
+                    const SizedBox(width: 8), // Space between text and image
                     Container(
                       width: 42,
                       height: 42,
@@ -702,10 +742,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: color,
                         ),
                       ),
-                      child: Icon(
-                        icon,
-                        size: 20,
-                        color: Colors.white,
+                      child: Center(
+                        child: Image.asset(
+                          imagePath,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ],
@@ -758,10 +799,13 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: SizedBox(
                 width: 382,
-                height: 370,
+                height: 320,
                 child: Column(
                   children: [
-                    _buildHeader1(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildHeader1(),
+                    ),
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -788,23 +832,20 @@ class _MyHomePageState extends State<MyHomePage> {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFFA4AFC0).withOpacity(0.2), // Border color
+            color: const Color(0xFFA4AFC0).withOpacity(0.2), // Border color
             width: 1.0, // Border width
           ),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.only(top: 10, bottom: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                IconButton(
-                  iconSize: 20,
-                  icon: const Icon(Icons.report_problem_rounded),
-                  color: const Color(0xFFA4AFC0),
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     // onPressed code here
                     Navigator.push(
                       context,
@@ -812,7 +853,19 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (context) => const SupervisorPage()),
                     );
                   },
+                  child: Container(
+                    width: 24,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            'assets/image/Help.png'), // Replace with your image path
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                 ),
+                const SizedBox(width: 8), // Space between image and text
                 const Text(
                   'هل تواجه مشكلة',
                   style: TextStyle(
@@ -878,12 +931,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: const TextStyle(fontSize: 18),
               ),
             ),
-            trailing: Icon(
-              Icons.volume_up_rounded,
-              color: request.time == 'لم يبدأ بعد'
-                  ? const Color(0xFF2BAFCC)
-                  : const Color(0xFFC4C9D1),
-              size: 24,
+            trailing: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    request.time == 'لم يبدأ بعد'
+                        ? 'assets/image/Echo.png' // Replace with your active image path
+                        : 'assets/image/off.png', // Replace with your inactive image path
+                  ),
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ),
         );
@@ -910,7 +970,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: _buildHeader(
                   leftText: 'إضافة مفوض جديد',
                   leftIcon: Icons.add_circle,
-                  leftIconColor: Color(0xFF92D400),
+                  leftIconColor: const Color(0xFF92D400),
                   onLeftIconPressed: () {
                     // Navigate to AddReceiverForm
                     Navigator.push(
@@ -920,8 +980,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                   rightText: 'المفوّض بالاستلام',
-                  rightIcon: Icons.people,
-                  rightIconColor: Color(0xFF92D400),
+                  rightImagePath:
+                      'assets/image/Parent Student.png', // Path to the right image
                 ),
               ),
               // Pass the receivers list to ReceiverListWidget
