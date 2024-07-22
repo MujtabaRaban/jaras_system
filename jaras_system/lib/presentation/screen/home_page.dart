@@ -598,54 +598,33 @@ class _MyHomePageState extends State<MyHomePage> {
     // Widget for the trailing part of the ListTile, customized based on status
     Widget trailingWidget;
     if (request.status == 'حاضر') {
-      trailingWidget = Dismissible(
-        key: Key(request.id),
-        direction: DismissDirection.endToStart,
-        onDismissed: (direction) {
-          setState(() {
-            request.status = 'يذاع الأن';
-          });
-          _addPickUpRequest(request.studentName);
-        },
-        background: Container(
-          margin: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-              color: const Color(0xFF92D400),
-              border: Border.all(color: const Color(0xFFEBEBEB)),
-              borderRadius: BorderRadius.circular(14)),
-          alignment: Alignment.centerRight,
-          child: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Colors.white,
-            size: 35,
-          ),
-        ),
-        child: _buildListTile(
-          listTileText, const Color(0xFF92D400),
-          'assets/image/DD.png', // Replace with the path to your image
-        ),
+      trailingWidget = _buildListTile(
+        listTileText,
+        const Color(0xFF92D400),
+        'assets/image/DD.png', // Replace with the path to your image
+        request,
       );
     } else if (request.status == 'يذاع الأن') {
       trailingWidget = Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
         ),
-        child: _buildListTile(
-            listTileText, const Color(0xff00D9F4), 'assets/image/off.png'),
+        child: _buildListTile(listTileText, const Color(0xff00D9F4),
+            'assets/image/off.png', request),
       );
     } else if (request.status == 'خرج') {
       trailingWidget = Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
         ),
-        child: _buildListTile(
-            listTileText, const Color(0xff00D9F4), 'assets/image/lol.png'),
+        child: _buildListTile(listTileText, const Color(0xff00D9F4),
+            'assets/image/lol.png', request),
       );
     } else {
       trailingWidget = Container(
         margin: const EdgeInsets.symmetric(vertical: 15),
-        child: _buildListTile(
-            listTileText, const Color(0xFF9DA5B2), 'assets/image/up.png'),
+        child: _buildListTile(listTileText, const Color(0xFF9DA5B2),
+            'assets/image/up.png', request),
       );
     }
 
@@ -709,7 +688,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildListTile(String listTileText, Color color, String imagePath) {
+  Widget _buildListTile(String listTileText, Color color, String imagePath,
+      PickUpRequest request) {
     return SizedBox(
       width: 382,
       child: ListTile(
@@ -732,23 +712,67 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontSize: 16),
                     ),
                     const SizedBox(width: 8), // Space between text and image
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
+                    // Conditionally add Dismissible based on request status
+                    if (request.status == 'حاضر')
+                      Dismissible(
+                        key: Key(request.id),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          setState(() {
+                            request.status = 'يذاع الأن';
+                          });
+                          _addPickUpRequest(request.studentName);
+                        },
+                        background: Container(
+                          margin: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                              color: const Color(0xFF92D400),
+                              border:
+                                  Border.all(color: const Color(0xFFEBEBEB)),
+                              borderRadius: BorderRadius.circular(14)),
+                          alignment: Alignment.centerRight,
+                          child: const Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                        ),
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: color,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: color,
+                            ),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              imagePath,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
                           color: color,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: color,
+                          ),
+                        ),
+                        child: Center(
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: Image.asset(
-                          imagePath,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ],
