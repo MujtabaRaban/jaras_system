@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String pickUpStatus = 'لم يحن موعد الخروج بعد';
   List<Receiver> receivers = [];
   List<PickUpRequest> completedRequests = [];
+  List<PickUpRequest> notcompletedRequests = [];
   List<PickUpRequest> pendingRequests = [];
   List<PickUpRequest> parentRequests = [];
   final Uuid uuid = const Uuid();
@@ -65,8 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startTimer() {
     Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       final now = DateTime.now();
-      final pickUpTime = DateTime(
-          now.year, now.month, now.day); // Example pick-up time at 7:00 AM
+      final pickUpTime =
+          DateTime(now.year, now.month, now.day); //  pick-up time
       String newPickUpStatus = now.isAfter(pickUpTime)
           ? 'حان موعد الخروج'
           : 'لم يحن موعد الخروج بعد';
@@ -108,12 +109,18 @@ class _MyHomePageState extends State<MyHomePage> {
         status: 'خرج',
       ),
     ];
-
+    notcompletedRequests = [];
     pendingRequests = [];
     parentRequests = [
       PickUpRequest(
           id: uuid.v4(),
           studentName: 'علي عبدالله',
+          time: 'لم يبدأ بعد',
+          date: '',
+          status: 'حاضر'),
+      PickUpRequest(
+          id: uuid.v4(),
+          studentName: 'مجتبى محمد',
           time: 'لم يبدأ بعد',
           date: '',
           status: 'حاضر'),
@@ -574,6 +581,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Color statusColor;
     String statusText;
     String listTileText;
+    ColorFilter? colorFilter;
 
     // Determine the values of the variables based on the request status
     switch (request.status) {
@@ -581,39 +589,44 @@ class _MyHomePageState extends State<MyHomePage> {
       case 'يذاع الأن':
       case 'طلب النداء':
         statusImagePath = 'assets/image/Checkmark.png';
-        statusColor = const Color(0xFF92D400);
+        statusColor = (request.status == 'يذاع الأن')
+            ? const Color(0xff2BAFCC)
+            : const Color(0xFF92D400);
         statusText = 'حاضر';
         listTileText = (request.status == 'يذاع الأن')
             ? 'يذاع الآن؛ يرجى الانتظار'
             : 'اسحب لرن الجرس';
+        colorFilter = (request.status == 'يذاع الأن')
+            ? const ColorFilter.mode(Color(0xff2BAFCC), BlendMode.srcIn)
+            : null;
         break;
       case 'خرج':
-        statusImagePath =
-            'assets/image/Outside.png'; // Change this to appropriate image
+        statusImagePath = 'assets/image/Outside.png';
         statusColor = const Color(0xff00D9F4);
         statusText = 'خرج';
         listTileText = 'غادر الطالب المدرسة';
+        colorFilter = null;
         break;
       case 'غائب':
-        statusImagePath =
-            'assets/image/Heartbreak.png'; // Change this to appropriate image
+        statusImagePath = 'assets/image/Heartbreak.png';
         statusColor = const Color(0xff9DA5B2);
         statusText = 'غائب';
         listTileText = 'الطالب غائب اليوم';
+        colorFilter = null;
         break;
       case 'متأخر':
-        statusImagePath =
-            'assets/image/ClockDelay.png'; // Change this to appropriate image
+        statusImagePath = 'assets/image/ClockDelay.png';
         statusColor = const Color(0xffFFA544);
         statusText = 'متأخر';
         listTileText = 'لم يخرج بعد 5 دقائق من ندائه';
+        colorFilter = null;
         break;
       default:
-        statusImagePath =
-            'assets/image/D.png'; // Change this to appropriate image
+        statusImagePath = 'assets/image/D.png';
         statusColor = Colors.grey;
         statusText = 'غير معروف';
         listTileText = 'الحالة غير معروفة';
+        colorFilter = null;
     }
 
     // Widget for the trailing part of the ListTile, customized based on status
@@ -630,7 +643,7 @@ class _MyHomePageState extends State<MyHomePage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
         ),
-        child: _buildListTile(listTileText, const Color(0xff00D9F4),
+        child: _buildListTile(listTileText, const Color(0xff2BAFCC),
             'assets/image/off.png', request),
       );
     } else if (request.status == 'خرج') {
@@ -665,7 +678,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Text(
                       statusText,
                       style: TextStyle(
-                        color: statusColor,
+                        color: (request.status == 'حاضر')
+                            ? const Color(0xff353535)
+                            : const Color(0xff9DA5B2),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -677,6 +692,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         image: DecorationImage(
                           image: AssetImage(statusImagePath),
                           fit: BoxFit.contain,
+                          colorFilter: colorFilter,
                         ),
                       ),
                     ),
@@ -687,9 +703,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Text(
                     request.studentName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: (request.status == 'حاضر')
+                          ? const Color(0xff353535)
+                          : const Color(0xff9DA5B2),
                     ),
                   ),
                   const SizedBox(width: 5),
@@ -716,49 +735,78 @@ class _MyHomePageState extends State<MyHomePage> {
       child: ListTile(
         title: Card(
           color: Colors.white,
-          child: ListTile(
-            title: const SizedBox(), // Empty widget as title
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      listTileText,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    const SizedBox(width: 8), // Space between text and image
-                    // Conditionally add Dismissible based on request status
-                    if (request.status == 'حاضر')
-                      Dismissible(
-                        key: Key(request.id),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          setState(() {
-                            request.status = 'يذاع الأن';
-                          });
-                          _addPickUpRequest(request.studentName);
-                        },
-                        background: Container(
-                          margin: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                              color: const Color(0xFF92D400),
-                              border:
-                                  Border.all(color: const Color(0xFFEBEBEB)),
-                              borderRadius: BorderRadius.circular(14)),
-                          alignment: Alignment.centerRight,
-                          child: const Icon(
-                            Icons.arrow_back_ios_rounded,
-                            color: Colors.white,
-                            size: 35,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: (request.status == 'يذاع الأن')
+                      ? const Color(0xff2BAFCC)
+                      : Colors.transparent),
+            ),
+            child: ListTile(
+              title: const SizedBox(), // Empty widget as title
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        listTileText,
+                        style: TextStyle(
+                            color: (request.status == 'حاضر')
+                                ? const Color(0xff353535)
+                                : const Color(0xff9DA5B2),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                      const SizedBox(width: 8), // Space between text and image
+                      // Conditionally add Dismissible based on request status
+                      if (request.status == 'حاضر')
+                        Dismissible(
+                          key: Key(request.id),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            setState(() {
+                              request.status = 'يذاع الأن';
+                            });
+                            _addPickUpRequest(request.studentName);
+                          },
+                          background: Container(
+                            margin: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                                color: const Color(0xFF92D400),
+                                border:
+                                    Border.all(color: const Color(0xFFEBEBEB)),
+                                borderRadius: BorderRadius.circular(14)),
+                            alignment: Alignment.centerRight,
+                            child: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.white,
+                              size: 35,
+                            ),
                           ),
-                        ),
-                        child: Container(
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: color,
+                              ),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                imagePath,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
@@ -775,39 +823,21 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
-                      )
-                    else
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: color,
-                          ),
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            imagePath,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-            leading: (listTileText == 'اسحب لرن الجرس')
-                ? Icon(
-                    Icons.notifications,
-                    color: color,
-                  )
-                : Icon(
-                    Icons.lock,
-                    color: color,
-                    size: 20,
+                    ],
                   ),
+                ],
+              ),
+              leading: (listTileText == 'اسحب لرن الجرس')
+                  ? Icon(
+                      Icons.notifications,
+                      color: color,
+                    )
+                  : Icon(
+                      Icons.lock,
+                      color: color,
+                      size: 20,
+                    ),
+            ),
           ),
         ),
       ),
