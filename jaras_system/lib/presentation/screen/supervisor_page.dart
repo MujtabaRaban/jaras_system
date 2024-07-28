@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jaras_system/presentation/screen/messagePage.dart';
 
 class SupervisorPage extends StatelessWidget {
   const SupervisorPage({super.key});
@@ -8,12 +9,16 @@ class SupervisorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(
-              Icons.report_problem_rounded,
-              color: Color(0XFF92D400),
+            padding: const EdgeInsets.only(right: 15),
+            child: IconButton(
+              onPressed: () {},
+              icon: Image.asset(
+                color: const Color(0xFF92D400),
+                'assets/image/Help.png',
+              ),
+              iconSize: 24,
             ),
           )
         ],
@@ -22,10 +27,13 @@ class SupervisorPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.highlight_off, color: Color(0xffD0D5DD)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
           },
+          icon: Image.asset(
+            'assets/image/ll.png',
+          ),
+          iconSize: 24,
         ),
       ),
       body: Container(
@@ -75,7 +83,7 @@ class SupervisorPage extends StatelessWidget {
                             height: 35,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              color: Color(0xffF5F5F5),
+                              color: const Color(0xffF5F5F5),
                             ),
                             child: const Icon(
                               size: 30,
@@ -96,7 +104,12 @@ class SupervisorPage extends StatelessWidget {
                 ),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChatPage()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: const Color(0xFF92D400),

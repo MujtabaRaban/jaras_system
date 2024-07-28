@@ -31,6 +31,23 @@ class _MyHomePageState extends State<MyHomePage> {
   final StreamController<String> _pickUpStatusController =
       StreamController<String>();
 
+  void _addReceiver(Receiver newReceiver) {
+    setState(() {
+      receivers.add(newReceiver);
+    });
+  }
+
+  void _navigateToAddReceiverForm() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddReceiverForm(
+          addReceiverCallback: _addReceiver,
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -433,16 +450,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.highlight_off,
-                                    color: Color(0xffD0D5DD)),
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  Navigator.of(context).pop();
                                 },
+                                icon: Image.asset(
+                                  'assets/image/ll.png',
+                                  width: 20,
+                                  height: 20,
+                                ),
+                                iconSize: 24,
                               ),
                               const Text('ما هي حالة الطالب؟'),
                               IconButton(
                                 iconSize: 20,
-                                icon: const Icon(Icons.help),
+                                icon: const Icon(Icons.info),
                                 color: const Color(0xFF92D400),
                                 onPressed: () {
                                   // onPressed code here
@@ -1001,11 +1022,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leftIconColor: const Color(0xFF92D400),
                   onLeftIconPressed: () {
                     // Navigate to AddReceiverForm
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AddReceiverForm()),
-                    );
+                    _navigateToAddReceiverForm();
                   },
                   rightText: 'المفوّض بالاستلام',
                   rightImagePath:

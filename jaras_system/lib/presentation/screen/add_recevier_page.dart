@@ -4,6 +4,9 @@ import 'package:jaras_system/presentation/modul/receiver.dart';
 import 'package:jaras_system/presentation/widget/custom_formfield_page.dart';
 
 class AddReceiverForm extends StatefulWidget {
+  final Function(Receiver) addReceiverCallback;
+
+  AddReceiverForm({required this.addReceiverCallback});
   @override
   _AddReceiverFormState createState() => _AddReceiverFormState();
 }
@@ -35,106 +38,113 @@ class _AddReceiverFormState extends State<AddReceiverForm> {
           ],
         ),
         leading: IconButton(
-          icon: const Icon(Icons.highlight_off, color: Color(0xffD0D5DD)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
           },
+          icon: Image.asset(
+            'assets/image/ll.png',
+          ),
+          iconSize: 24,
         ),
       ),
-      body: Center(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const Text(
-                    'سيتم التأكد من خروج المشرف من تسليم الطالب للمفوض المحدد أدناه حصراً',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff858B95)),
-                  ),
-                  const SizedBox(height: 20),
-                  Image.asset(
-                      'assets/image/receiver.jpg'), // Replace with your image asset
-                  const SizedBox(height: 20),
-                  CustomTextFormField(
-                    labelText: 'اسم المفوّض',
-                    hintText: 'اكتب الاسم الكامل للمفوّض..',
-                    icon: Icons.contact_emergency_sharp,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال الاسم الكامل للمفوّض';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _name = value!;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextFormField(
-                    labelText: 'صفة العلاقة',
-                    hintText: 'حدد صفة المفوّض..',
-                    icon: Icons.link,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال صفة العلاقة';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _relationship = value!;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        // Add the new receiver to the list
-                        receivers.add(Receiver(
-                          name: _name,
-                          relationship: _relationship,
-                          isActive:
-                              true, // Assuming the receiver is active upon addition
-                        ));
-                        // Clear form fields after adding
-                        _name = '';
-                        _relationship = '';
-                        // Optionally, you can update UI here or handle state differently
-                        setState(() {
-                          
-                        }); // Update UI to reflect new receiver
-                      }
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFF92D400),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 80, vertical: 15),
-                      textStyle: GoogleFonts.cairo(fontSize: 16),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const Text(
+                      'سيتم التأكد من خروج المشرف من تسليم الطالب للمفوض المحدد أدناه حصراً',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff858B95)),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'حفظ وتفعيل المفوّض',
-                          style: GoogleFonts.cairo(
-                              textStyle: const TextStyle(fontSize: 21)),
-                        ),
-                        const SizedBox(width: 1),
-                        const Icon(Icons.add_circle),
-                      ],
+                    const SizedBox(height: 20),
+                    Image.asset(
+                        'assets/image/receiver.jpg'), // Replace with your image asset
+                    const SizedBox(height: 20),
+                    CustomTextFormField(
+                      labelText: 'اسم المفوّض',
+                      hintText: 'اكتب الاسم الكامل للمفوّض..',
+                      icon: Icons.contact_emergency_sharp,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'يرجى إدخال الاسم الكامل للمفوّض';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _name = value!;
+                      },
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    CustomTextFormField(
+                      labelText: 'صفة العلاقة',
+                      hintText: 'حدد صفة المفوّض..',
+                      icon: Icons.link,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'يرجى إدخال صفة العلاقة';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _relationship = value!;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          // Add the new receiver to the list
+                          // Create a new receiver object
+                          Receiver newReceiver = Receiver(
+                            name: _name,
+                            relationship: _relationship,
+                            isActive:
+                                true, // Assuming the receiver is active upon addition
+                          );
+
+                          // Call the callback function to add the receiver in MyHomePage
+                          widget.addReceiverCallback(newReceiver);
+                          // Clear form fields after adding
+                          _name = '';
+                          _relationship = '';
+                          // Optionally, you can update UI here or handle state differently
+                          setState(() {}); // Update UI to reflect new receiver
+                        }
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xFF92D400),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 80, vertical: 15),
+                        textStyle: GoogleFonts.cairo(fontSize: 16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'حفظ وتفعيل المفوّض',
+                            style: GoogleFonts.cairo(
+                                textStyle: const TextStyle(fontSize: 21)),
+                          ),
+                          const SizedBox(width: 1),
+                          const Icon(Icons.add_circle),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
