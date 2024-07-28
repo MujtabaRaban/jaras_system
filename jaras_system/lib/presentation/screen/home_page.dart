@@ -971,28 +971,42 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListTile(
             leading: Text(
               displayTime,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            title: Padding(
-              padding: const EdgeInsets.only(left: 50),
-              child: Text(
-                request.studentName,
-                style: const TextStyle(fontSize: 18),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: request.time == 'لم يبدأ بعد'
+                    ? const Color(0xff2BAFCC)
+                    : Colors.black,
               ),
             ),
-            trailing: Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    request.time == 'لم يبدأ بعد'
-                        ? 'assets/image/Echo.png' // Replace with your active image path
-                        : 'assets/image/off.png', // Replace with your inactive image path
-                  ),
-                  fit: BoxFit.contain,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  request.studentName,
+                  style: TextStyle(
+                      color: request.time == 'لم يبدأ بعد'
+                          ? const Color(0xff2BAFCC)
+                          : Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        request.time == 'لم يبدأ بعد'
+                            ? 'assets/image/Echo.png' // Replace with your active image path
+                            : 'assets/image/off.png', // Replace with your inactive image path
+                      ),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
